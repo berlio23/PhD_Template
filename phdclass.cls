@@ -9,3 +9,4 @@
 \LoadClass[a4]{book}
 
 \newcommand{\addchap}[1]{\include{chap_#1/chap}}
+\renewcommand{\thesection}{\arabic{section}}

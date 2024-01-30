@@ -32,6 +32,8 @@ At any time use ```make usage``` to print available commands.
 
 - ```make cleanall```: to clean all compiled files, including logs, auxilliary files and pdfs.
 
+## Requirements
+
 ## Upcoming
 
 - [ ] continuous compilation of a specific chapter
