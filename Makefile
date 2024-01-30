@@ -151,6 +151,7 @@ allchap:
 	${COMPILE_CHAP}; \
 	done
 
+#TODO: Remove debug only dangerous command
 delchapall:
 	@echo 'Deleting all chapters...'
 	@rm -r ${CHAPS}
@@ -230,3 +231,6 @@ else
 	@echo "${COLOR_RED}Operating System not detected${COLOR_BASE}"
 	@exit 1
 endif
+
+usage:
+	@echo "${COLOR_ORANGE}README means Read me!${COLOR_BASE}"

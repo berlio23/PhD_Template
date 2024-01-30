@@ -20,9 +20,9 @@ At any time use ```make usage``` to print available commands.
 
 - ```make continuous```: to compile dynamically the manuscript when saving ```.tex``` files.
 
-- ```make newchap```: to create a new chapter. Awaits for the user to input the chapter name. Create a directory ```chap_${INPUT}``` with ```chap.tex``` inside.
+- ```make newchap```: to create a new chapter. Awaits for the user to input the chapter name. Create a directory ```chap_(chapter_name)``` with ```chap.tex``` inside.
 
-- ```make allchap```: to compile all chapters individually. Output ```.pdf``` are stored under ```pdf/${CHAPNAME}.pdf```.
+- ```make allchap```: to compile all chapters individually. Output ```.pdf``` are stored under ```pdf/(chapter_name).pdf```.
 
 - ```make chap```: to compile specific chapter. Awaits for the user to input the chapter name.
 
@@ -47,13 +47,11 @@ Dependencies can be installed using ```make dep```.
 
 - [ ] continuous compilation of a specific chapter
 - [ ] view show a specific chapter
-- [ ] delete a specific chapter with confirmation and archive
-- [ ] empty dustbin
-- [ ] configure to use on specific plateform
 - [ ] Specify IDE and open tex files in that IDE
-- [ ] make usage 
-- [ ] make init OR make example
-- [ ] make default to echo usage
-- [ ] OS specific configuration
-- [X] A nice README
 - [ ] Synchronisation synctex !
+- [ ] Example in git repo
+- [X] configure to use on specific plateform
+- [X] make usage 
+- [X] make default to echo usage
+- [X] OS specific configuration
+- [X] A nice README
