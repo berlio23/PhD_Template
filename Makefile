@@ -16,6 +16,8 @@ ifndef CLASS
 CLASS := phdclass
 endif
 
+OS := $(shell uname)
+
 COLOR_BASE := \033[0m
 COLOR_RED := \033[1;31m
 COLOR_GREEN := \033[1;32m
@@ -63,6 +65,21 @@ COMPILE_CHAP = cd ${CHAP_PREFIX}$$${CHAP_TO_COMPILE}; \
 	echo 'Done.'
 
 CHAP_TO_COMPILE := chapname
+
+CONFIG_LATEXMKRC = "\$$silent = 1;\
+\n\$$fdb_ext = 'fdb';\
+\n\
+\n@default_files = ('main.tex');\
+\n\
+\n\#\$$aux_dir = 'aux';\
+\n\#\$$ENV{PDF_PATH} = $out_dir;\
+\n\
+\n\$$pdf_mode = 1;\
+\n\#\$$pdflatex = 'pdflatex %O -halt-on-error -shell-escape %S; cp %B.pdf locked.%B.pdf';\
+\n\$$pdflatex = 'pdflatex %O -synctex=1 -interaction=nonstopmode %S; cp %B.pdf ${PDF_PATH}/%B.pdf; cp %B.log ${LOG_PATH}/%B.log';\
+\n\$$pdf_previewer = 'start evince %O %S';\
+\n\
+\n\$$clean_ext .= 'bbl nav out auxlock';"
 
 include .env
 
@@ -139,9 +156,6 @@ test:
 	echo 'Directory ${PDF_PATH} does not exists, creating...'; \
 	mkdir ${PDF_PATH}; \
 	fi
-	@echo 'PDF_PATH=${PDF_PATH}/' > '$@'
-	@echo 'LOG_PATH=${LOG_PATH}/' >> '$@'
-	@chmod a+r .env
 
 cleanlog:
 	@rm -f ${LOG}
@@ -169,3 +183,36 @@ cleanall: clean
 	@echo 'Done.'
 
 rebuild: cleanall view 
+
+configure:
+ifeq (${OS}, Linux)
+	@echo "${COLOR_ORANGE}Linux Operating System detected${COLOR_BASE}"
+	@MKRC_CONTENT="linus"; \
+	echo ${CONFIG_LATEXMKRC} > .latexmkrc
+else ifeq (${OS}, Darwin)
+	@echo "${COLOR_ORANGE}Mac Operating System detected${COLOR_BASE}"
+	@MKRC_CONTENT="lkj"; \
+	echo ${CONFIG_LATEXMKRC} > .latexmkrc
+else
+	@echo "${COLOR_RED}Error: Operating System not detected"
+	@exit 1
+endif
+
+dep:
+ifeq (${OS}, Linux)
+	@echo "${COLOR_ORANGE}Installing Texlive full distribution...${COLOR_BASE}"
+	sudo apt install texlive-full
+	@echo "${COLOR_ORANGE}Installing Latexmk...${COLOR_BASE}"
+	sudo apt install latexmk
+	@echo "${COLOR_ORANGE}Installing Evince...${COLOR_BASE}"
+	sudo apt install evince
+else ifeq (${OS}, Darwin)
+	@echo "${COLOR_ORANGE}Installing Homebrew package manager...{COLOR_BASE}"
+	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	@echo "${COLOR_ORANGE}Installing Texlive full distribution...${COLOR_BASE}"
+	sudo brew install texlive
+	@echo "${COLOR_ORANGE}Installing Latexmk...${COLOR_BASE}"
+	sudo brew install latexmk
+else
+	@echo "${COLOR_RED}Operating System not detected${COLOR_BASE}"
+endif
