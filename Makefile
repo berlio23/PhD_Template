@@ -1,19 +1,19 @@
 ifndef V
-TO_LOG = >> ${LOG} 2<&1
+	TO_LOG = >> ${LOG} 2<&1
 else
-TO_LOG = 
+	TO_LOG = 
 endif
 
 ifndef TARGET
-TARGET := main.tex
+	TARGET := main.tex
 endif
 
 ifndef BIBLIO
-BIBLIO := biblio.bib
+	BIBLIO := biblio.bib
 endif
 
 ifndef CLASS
-CLASS := phdclass
+	CLASS := phdclass
 endif
 
 OS := $(shell uname)
@@ -37,7 +37,14 @@ PDF_PATH := pdf
 LOG_PATH := logs
 LOG := ${LOG_PATH}/compile.log
 
-LATEXMK := latexmk
+#TODO: replace command execution to check wether the configuration is valid or not. Or the compiler does not exists
+LATEXMK := \
+	if ! [ -f .latexmkrc ]; then \
+	echo "${COLOR_RED}No latexmk configuration file found${COLOR_BASE}"; \
+	echo "${COLOR_ORANGE}Run make configure to create latexmk configuration file${COLOR_BASE}"; \
+	exit 1; \
+	fi; \
+	latexmk
 
 COMPILE_CHAP = cd ${CHAP_PREFIX}$$${CHAP_TO_COMPILE}; \
 	echo 'Compiling chapter '$$${CHAP_TO_COMPILE}; \
@@ -50,36 +57,43 @@ COMPILE_CHAP = cd ${CHAP_PREFIX}$$${CHAP_TO_COMPILE}; \
 	echo '\\bibliographystyle{alpha}' >> ${CHAP_MAIN}.tex; \
 	echo '\\bibliography{../${BIBLIO}}' >> ${CHAP_MAIN}.tex; \
 	echo '\\end{document}' >> '${CHAP_MAIN}.tex'; \
-	echo $(MAKE); \
+	echo ${CONFIG_LATEXMKRC} >> .latexmkrc; \
 	mkdir ${PDF_PATH}; \
 	mkdir ${LOG_PATH}; \
 	rm -f ${LOG}; \
 	echo 'Compiling '$$${CHAP_TO_COMPILE}'/main.tex'; \
 	${LATEXMK} -pdf ${CHAP_MAIN}.tex ${TO_LOG}; \
 	echo 'Copying logs and pdf...'; \
-	cp main.log ../${LOG_PATH}/$$${CHAP_TO_COMPILE}.log; \
-	cp main.pdf ../${PDF_PATH}/$$${CHAP_TO_COMPILE}.pdf; \
+	cp ${LOG_PATH}/main.log ../${LOG_PATH}/$$${CHAP_TO_COMPILE}.log; \
+	cp ${PDF_PATH}/main.pdf ../${PDF_PATH}/$$${CHAP_TO_COMPILE}.pdf; \
 	rm -f ${CHAP_MAIN}.*; \
 	rm -r ${LOG_PATH} ${PDF_PATH}; \
+	rm .latexmkrc; \
 	cd ..; \
 	echo 'Done.'
 
 CHAP_TO_COMPILE := chapname
 
+ifeq (${OS}, Linux)
+	VIEWER := evince
+else ifeq (${OS}, Darwin)
+	VIEWER := apercu
+endif
+
 CONFIG_LATEXMKRC = "\$$silent = 1;\
-\n\$$fdb_ext = 'fdb';\
-\n\
-\n@default_files = ('main.tex');\
-\n\
-\n\#\$$aux_dir = 'aux';\
-\n\#\$$ENV{PDF_PATH} = \$$out_dir;\
-\n\
-\n\$$pdf_mode = 1;\
-\n\#\$$pdflatex = 'pdflatex %O -halt-on-error -shell-escape %S; cp %B.pdf locked.%B.pdf';\
-\n\$$pdflatex = 'pdflatex %O -synctex=1 -interaction=nonstopmode %S; cp %B.pdf ${PDF_PATH}/%B.pdf; cp %B.log ${LOG_PATH}/%B.log';\
-\n\$$pdf_previewer = 'start $$MKRC_CONTENT %O %S';\
-\n\
-\n\$$clean_ext .= 'bbl nav out auxlock';"
+	\n\$$fdb_ext = 'fdb';\
+	\n\
+	\n@default_files = ('main.tex');\
+	\n\
+	\n\#\$$aux_dir = 'aux';\
+	\n\#\$$ENV{PDF_PATH} = \$$out_dir;\
+	\n\
+	\n\$$pdf_mode = 1;\
+	\n\#\$$pdflatex = 'pdflatex %O -halt-on-error -shell-escape %S; cp %B.pdf locked.%B.pdf';\
+	\n\$$pdflatex = 'pdflatex %O -synctex=1 -interaction=nonstopmode %S; cp %B.pdf ${PDF_PATH}/%B.pdf; cp %B.log ${LOG_PATH}/%B.log';\
+	\n\$$pdf_previewer = 'start ${VIEWER} %O %S';\
+	\n\
+	\n\$$clean_ext .= 'bbl nav out auxlock';"
 
 include .env
 
@@ -187,12 +201,11 @@ rebuild: cleanall view
 configure:
 ifeq (${OS}, Linux)
 	@echo "${COLOR_ORANGE}Linux Operating System detected${COLOR_BASE}"
-	@MKRC_CONTENT="evince"; \
-	echo ${CONFIG_LATEXMKRC} > .latexmkrc
+	@echo ${CONFIG_LATEXMKRC} > .latexmkrc
 else ifeq (${OS}, Darwin)
 	@echo "${COLOR_ORANGE}Mac Operating System detected${COLOR_BASE}"
-	@MKRC_CONTENT="lkj"; \
-	echo ${CONFIG_LATEXMKRC} > .latexmkrc
+	@echo ${CONFIG_LATEXMKRC} > .latexmkrc
+	@echo "To synchronize editor with Apercu go to option TODO: je sais plus le nom"
 else
 	@echo "${COLOR_RED}Error: Operating System not detected"
 	@exit 1

@@ -8,7 +8,7 @@ Alternatively, use ```make dep``` to install it.
 Use ```make configure``` to configure make to your environnement.
 Currently supported :
 - [X] Ubuntu
-- [ ] MacOS
+- [?] MacOS
 - [X] Windows 11 (Use WSL please.)
 
 ## Usage
@@ -32,7 +32,16 @@ At any time use ```make usage``` to print available commands.
 
 - ```make cleanall```: to clean all compiled files, including logs, auxilliary files and pdfs.
 
+- ```make configure```: Configure ```.latexmkrc``` files depending on the OS
+
+- ```make dep```: Install dependencies depending of the OS
+
 ## Requirements
+
+- Linux: The latex compiler ```latexmk```; A valid tex distribution  ```textlive(-full)```; A pdf viewer as ```evince```
+- MacOS: The package manager ```Homebrew```; The latex compiler ```latexmk```; A valide tex distribution ```texlive```
+
+Dependencies can be installed using ```make dep```.
 
 ## Upcoming
 
@@ -45,4 +54,6 @@ At any time use ```make usage``` to print available commands.
 - [ ] make usage 
 - [ ] make init OR make example
 - [ ] make default to echo usage
+- [ ] OS specific configuration
 - [X] A nice README
+- [ ] Synchronisation synctex !
