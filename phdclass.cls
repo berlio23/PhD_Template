@@ -5,6 +5,7 @@
 
 \ProcessOptions\relax
 
+%Define your class specification here
 
 \LoadClass[a4]{book}
 

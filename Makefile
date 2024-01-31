@@ -31,7 +31,7 @@ CHAP_MAIN = main
 CHAP_TEX = chap.tex
 SRC = $(wildcard ${CHAP_PREFIX}*/main.tex)
 
-MAIN_STY := structure
+MAIN_STY := macros
 
 PDF_PATH := pdf
 LOG_PATH := logs
@@ -202,15 +202,16 @@ rebuild: cleanall view
 configure:
 ifeq (${OS}, Linux)
 	@echo "${COLOR_ORANGE}Linux Operating System detected${COLOR_BASE}"
-	@echo ${CONFIG_LATEXMKRC} > .latexmkrc
 else ifeq (${OS}, Darwin)
 	@echo "${COLOR_ORANGE}Mac Operating System detected${COLOR_BASE}"
-	@echo ${CONFIG_LATEXMKRC} > .latexmkrc
 	@echo "To synchronize editor with Apercu go to option TODO: je sais plus le nom"
 else
 	@echo "${COLOR_RED}Error: Operating System not detected"
 	@exit 1
 endif
+	@echo "Creating .latexmkrc config file..."
+	@echo ${CONFIG_LATEXMKRC} > .latexmkrc
+	@echo "Done."
 
 dep:
 ifeq (${OS}, Linux)
